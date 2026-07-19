@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:cov
+
+      - name: Coverage summary
+        if: ${{ always() }}
+        run: |
+          node -e "const fs=require('fs'); const path='./coverage/coverage-summary.json'; if(!fs.existsSync(path)){ console.log('Coverage summary not found.'); fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, '## Test Coverage\n\nCoverage summary not found.\n'); process.exit(0);} const c=require(path).total; const lines=[`Statements: ${c.statements.pct}% (${c.statements.covered}/${c.statements.total})`,`Branches: ${c.branches.pct}% (${c.branches.covered}/${c.branches.total})`,`Functions: ${c.functions.pct}% (${c.functions.covered}/${c.functions.total})`,`Lines: ${c.lines.pct}% (${c.lines.covered}/${c.lines.total})`]; console.log('Test coverage summary'); lines.forEach(l=>console.log('- '+l)); const md=['## Test Coverage','',...lines.map(l=>'- '+l),''].join('\n'); fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md);"

@@ -1,0 +1,54 @@
+services:
+  postgres01:
+    image: postgres:16-alpine
+    container_name: pos-soat-car-sale-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: car_sale
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data01:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d car_sale"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - car-sales-net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: car-sales
+    restart: unless-stopped
+    depends_on:
+      postgres01:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres01
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: car_sale
+      PORT: 3000
+      # Hostname convention for the sibling "core" service container. The core
+      # repo's own compose file must join the same external `car-sales-net`
+      # network and expose its container under this hostname for this to
+      # resolve. See README.md for details.
+      PAYMENT_ORDER_SERVICE_URL: http://car-sales-core:3000/payment-order
+    ports:
+      - "3000:3000"
+    networks:
+      - car-sales-net
+
+volumes:
+  postgres_data01:
+
+networks:
+  car-sales-net:
+    external: true
