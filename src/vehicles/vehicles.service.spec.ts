@@ -58,8 +58,14 @@ describe('VehiclesService', () => {
     const result = [{ id: 1 }];
     vehiclesRepository.findAll.mockReturnValue(result);
 
-    expect(service.findAll('price', false)).toBe(result);
-    expect(vehiclesRepository.findAll).toHaveBeenCalledWith('price', false);
+    expect(service.findAll('price', false, VehicleStatus.AVAILABLE)).toBe(
+      result,
+    );
+    expect(vehiclesRepository.findAll).toHaveBeenCalledWith(
+      'price',
+      false,
+      VehicleStatus.AVAILABLE,
+    );
   });
 
   it('delegates findOne to repository', () => {

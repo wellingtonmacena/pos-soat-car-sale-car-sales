@@ -20,6 +20,7 @@ import { VehiclesService } from './vehicles.service';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import { VehicleSortField } from './repositories/vehicles.repository';
+import { VehicleStatus } from './entities/vehicle.entity';
 
 @ApiTags('vehicles')
 @Controller('vehicles')
@@ -38,15 +39,31 @@ export class VehiclesController {
   @ApiOperation({ summary: 'List vehicles' })
   @ApiQuery({ name: 'sortBy', required: false, enum: ['createdAt', 'price'] })
   @ApiQuery({ name: 'sortAsc', required: false, type: Boolean })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    enum: [VehicleStatus.AVAILABLE, VehicleStatus.RESERVED, VehicleStatus.SOLD],
+  })
   @ApiResponse({ status: 200, description: 'Vehicles list' })
   findAll(
     @Query('sortBy') sortBy?: VehicleSortField,
     @Query('sortAsc') sortAsc?: string,
+    @Query('status') status?: VehicleStatus,
   ) {
     const normalizedSortBy = sortBy === 'price' ? 'price' : 'createdAt';
     const normalizedSortAsc = sortAsc === 'false' ? false : true;
+    const normalizedStatus =
+      status === VehicleStatus.AVAILABLE ||
+      status === VehicleStatus.RESERVED ||
+      status === VehicleStatus.SOLD
+        ? status
+        : undefined;
 
-    return this.vehiclesService.findAll(normalizedSortBy, normalizedSortAsc);
+    return this.vehiclesService.findAll(
+      normalizedSortBy,
+      normalizedSortAsc,
+      normalizedStatus,
+    );
   }
 
   @Get('for-sale')

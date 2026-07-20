@@ -4,11 +4,15 @@ import { AppService } from './app.service';
 
 describe('AppController', () => {
   let controller: AppController;
-  let appService: { getHealth: jest.Mock };
+  let appService: {
+    getHealth: jest.Mock;
+    resetToLatestMigrations: jest.Mock;
+  };
 
   beforeEach(async () => {
     appService = {
       getHealth: jest.fn(),
+      resetToLatestMigrations: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -25,5 +29,18 @@ describe('AppController', () => {
 
     expect(controller.getHealth()).toBe(result);
     expect(appService.getHealth).toHaveBeenCalledTimes(1);
+  });
+
+  it('delegates reset-to-migrations to service', async () => {
+    const result = {
+      status: 'ok',
+      message: 'Database reset to latest migrations',
+      migrationsExecuted: 3,
+    };
+
+    appService.resetToLatestMigrations.mockResolvedValue(result);
+
+    await expect(controller.resetToMigrations()).resolves.toEqual(result);
+    expect(appService.resetToLatestMigrations).toHaveBeenCalledTimes(1);
   });
 });

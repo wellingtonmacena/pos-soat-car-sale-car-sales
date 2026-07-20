@@ -55,8 +55,14 @@ describe('VehiclesController', () => {
     const result = [{ id: 1 }];
     vehiclesService.findAll.mockReturnValue(result);
 
-    expect(controller.findAll('price', 'false')).toBe(result);
-    expect(vehiclesService.findAll).toHaveBeenCalledWith('price', false);
+    expect(controller.findAll('price', 'false', VehicleStatus.SOLD)).toBe(
+      result,
+    );
+    expect(vehiclesService.findAll).toHaveBeenCalledWith(
+      'price',
+      false,
+      VehicleStatus.SOLD,
+    );
   });
 
   it('defaults findAll sort field to createdAt and sortAsc to true', () => {
@@ -64,7 +70,23 @@ describe('VehiclesController', () => {
     vehiclesService.findAll.mockReturnValue(result);
 
     expect(controller.findAll(undefined, undefined)).toBe(result);
-    expect(vehiclesService.findAll).toHaveBeenCalledWith('createdAt', true);
+    expect(vehiclesService.findAll).toHaveBeenCalledWith(
+      'createdAt',
+      true,
+      undefined,
+    );
+  });
+
+  it('ignores invalid status on findAll query params', () => {
+    const result = [{ id: 1 }];
+    vehiclesService.findAll.mockReturnValue(result);
+
+    expect(controller.findAll('createdAt', 'true', 'invalid' as VehicleStatus)).toBe(result);
+    expect(vehiclesService.findAll).toHaveBeenCalledWith(
+      'createdAt',
+      true,
+      undefined,
+    );
   });
 
   it('delegates findForSale to service', () => {

@@ -60,6 +60,7 @@ describe('VehiclesRepository', () => {
 
     await expect(repository.findAll()).resolves.toBe(result);
     expect(vehicleRepositoryMock.find).toHaveBeenCalledWith({
+      where: undefined,
       order: { createdAt: 'ASC' },
     });
   });
@@ -70,7 +71,21 @@ describe('VehiclesRepository', () => {
 
     await expect(repository.findAll('price', false)).resolves.toBe(result);
     expect(vehicleRepositoryMock.find).toHaveBeenCalledWith({
+      where: undefined,
       order: { price: 'DESC' },
+    });
+  });
+
+  it('lists vehicles filtered by status when requested', async () => {
+    const result = [{ id: 1, status: VehicleStatus.RESERVED }];
+    vehicleRepositoryMock.find.mockResolvedValue(result);
+
+    await expect(
+      repository.findAll('createdAt', true, VehicleStatus.RESERVED),
+    ).resolves.toBe(result);
+    expect(vehicleRepositoryMock.find).toHaveBeenCalledWith({
+      where: { status: VehicleStatus.RESERVED },
+      order: { createdAt: 'ASC' },
     });
   });
 

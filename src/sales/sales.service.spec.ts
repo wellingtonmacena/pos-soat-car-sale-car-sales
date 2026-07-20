@@ -144,7 +144,7 @@ describe('SalesService', () => {
       expect(vehicleRepositoryMock.save).toHaveBeenCalledWith(vehicle);
       expect(axiosPostSpy).toHaveBeenCalledWith(
         'http://payment-service/payment-orders',
-        expect.objectContaining({ totalPrice: vehicle.price }),
+        expect.objectContaining({ saleId: 1 }),
       );
       expect(result.paymentOrderCode).toBe('PAY-123');
     });

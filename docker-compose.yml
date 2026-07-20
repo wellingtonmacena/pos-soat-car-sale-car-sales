@@ -40,11 +40,13 @@ services:
       # repo's own compose file must join the same external `car-sales-net`
       # network and expose its container under this hostname for this to
       # resolve. See README.md for details.
-      PAYMENT_ORDER_SERVICE_URL: http://car-sales-core:3000/payment-order
+      PAYMENT_ORDER_SERVICE_URL: http://car-sales-core:3001/payment-order
     ports:
       - "3000:3000"
     networks:
-      - car-sales-net
+      car-sales-net:
+        aliases:
+          - car-sales-app
 
 volumes:
   postgres_data01:

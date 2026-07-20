@@ -26,7 +26,9 @@ jest.mock('@nestjs/swagger', () => {
 });
 
 jest.mock('./db/data-source', () => ({
-  getAppDataSource: jest.fn().mockResolvedValue(undefined),
+  getAppDataSource: jest.fn().mockResolvedValue({
+    runMigrations: jest.fn().mockResolvedValue([]),
+  }),
 }));
 
 describe('bootstrap', () => {
@@ -37,7 +39,9 @@ describe('bootstrap', () => {
 
   it('initializes the app and swagger docs', async () => {
     const listenMock = jest.fn().mockResolvedValue(undefined);
+    const getUrlMock = jest.fn().mockResolvedValue('http://localhost:4567');
     const useGlobalPipesMock = jest.fn();
+    const useGlobalInterceptorsMock = jest.fn();
     const swaggerBuilderMock = {
       setTitle: jest.fn().mockReturnThis(),
       setDescription: jest.fn().mockReturnThis(),
@@ -48,7 +52,9 @@ describe('bootstrap', () => {
 
     (NestFactory.create as jest.Mock).mockResolvedValue({
       listen: listenMock,
+      getUrl: getUrlMock,
       useGlobalPipes: useGlobalPipesMock,
+      useGlobalInterceptors: useGlobalInterceptorsMock,
     });
     (DocumentBuilder as unknown as jest.Mock).mockImplementation(
       () => swaggerBuilderMock,
@@ -81,9 +87,15 @@ describe('bootstrap', () => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(SwaggerModule.setup).toHaveBeenCalledWith(
       'api/docs',
-      { listen: listenMock, useGlobalPipes: useGlobalPipesMock },
+      {
+        listen: listenMock,
+        getUrl: getUrlMock,
+        useGlobalPipes: useGlobalPipesMock,
+        useGlobalInterceptors: useGlobalInterceptorsMock,
+      },
       {},
     );
-    expect(listenMock).toHaveBeenCalledWith('4567');
+    expect(listenMock).toHaveBeenCalledWith(4567);
+    expect(getUrlMock).toHaveBeenCalledTimes(1);
   });
 });

@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AppService } from './app.service';
 
@@ -12,5 +12,18 @@ export class AppController {
   @ApiResponse({ status: 200, description: 'Service is healthy' })
   getHealth() {
     return this.appService.getHealth();
+  }
+
+  @Post('admin/reset-to-migrations')
+  @ApiOperation({
+    summary: 'Reset database to latest migration version',
+  })
+  @ApiResponse({
+    status: 201,
+    description:
+      'Drops current data and reapplies migrations to restore baseline state',
+  })
+  resetToMigrations() {
+    return this.appService.resetToLatestMigrations();
   }
 }

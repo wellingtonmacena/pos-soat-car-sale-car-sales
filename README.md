@@ -1,5 +1,8 @@
 # Serviço de Venda de Veículos
 
+![Coverage Lines](https://img.shields.io/badge/coverage%20lines-94.61%25-brightgreen)
+![Coverage Branches](https://img.shields.io/badge/coverage%20branches-97.87%25-brightgreen)
+
 API NestJS + TypeORM + PostgreSQL responsável pelo cadastro de veículos e pelo fluxo de venda.
 É um dos 2 microsserviços do desafio **Tech Challenge Fase 4 (Pós Tech SOAT)**: uma plataforma de
 revenda de veículos automotores.
@@ -125,3 +128,9 @@ lines) ficar abaixo de 80%.
   e em todo Pull Request.
 - `.github/workflows/cd.yml`: em todo push para `main` (ou seja, após merge de um PR), builda a
   imagem Docker e publica em `ghcr.io/<owner>/<repo>` (tags `latest` e o SHA do commit).
+
+## Autor
+
+- Nome: Wellington Macena
+- Email: wellington.macena.23@gmail.com
+- RM: rm366131

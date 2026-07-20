@@ -64,7 +64,7 @@ export class SalesService {
       }
 
       // Expected contract for the core service's payment-order creation
-      // endpoint: it receives { saleId, totalPrice } and responds with a
+      // endpoint: it receives { saleId, status? } and responds with a
       // body shaped like { paymentCode: string, ... }. We read paymentCode
       // defensively in case the response shape differs slightly.
       let paymentCode: string | null = null;
@@ -74,7 +74,6 @@ export class SalesService {
           paymentOrderServiceUrl,
           {
             saleId: sale.id,
-            totalPrice,
           },
         );
 

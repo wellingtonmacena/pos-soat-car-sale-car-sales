@@ -21,11 +21,16 @@ export class VehiclesRepository {
     return repository.save(repository.create(createVehicleDto));
   }
 
-  async findAll(sortBy: VehicleSortField = 'createdAt', sortAsc = true) {
+  async findAll(
+    sortBy: VehicleSortField = 'createdAt',
+    sortAsc = true,
+    status?: VehicleStatus,
+  ) {
     const repository = await this.repository();
     const orderValue: FindOptionsOrderValue = sortAsc ? 'ASC' : 'DESC';
 
     return repository.find({
+      where: status ? { status } : undefined,
       order: {
         [sortBy]: orderValue,
       },

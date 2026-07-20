@@ -15,8 +15,8 @@ export class VehiclesService {
     return this.vehiclesRepository.create(createVehicleDto);
   }
 
-  findAll(sortBy?: VehicleSortField, sortAsc?: boolean) {
-    return this.vehiclesRepository.findAll(sortBy, sortAsc);
+  findAll(sortBy?: VehicleSortField, sortAsc?: boolean, status?: VehicleStatus) {
+    return this.vehiclesRepository.findAll(sortBy, sortAsc, status);
   }
 
   findOne(id: number) {
