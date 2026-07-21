@@ -27,7 +27,25 @@ jobs:
       - name: Run tests with coverage
         run: npm run test:cov
 
-      - name: Coverage summary
-        if: ${{ always() }}
+      - name: Add Job Summary
+        if: always()
         run: |
-          node -e "const fs=require('fs'); const path='./coverage/coverage-summary.json'; if(!fs.existsSync(path)){ console.log('Coverage summary not found.'); fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, '## Test Coverage\n\nCoverage summary not found.\n'); process.exit(0);} const c=require(path).total; const lines=[`Statements: ${c.statements.pct}% (${c.statements.covered}/${c.statements.total})`,`Branches: ${c.branches.pct}% (${c.branches.covered}/${c.branches.total})`,`Functions: ${c.functions.pct}% (${c.functions.covered}/${c.functions.total})`,`Lines: ${c.lines.pct}% (${c.lines.covered}/${c.lines.total})`]; console.log('Test coverage summary'); lines.forEach(l=>console.log('- '+l)); const md=['## Test Coverage','',...lines.map(l=>'- '+l),''].join('\n'); fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md);"
+          echo "## Test Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Tests completed successfully." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f ./coverage/coverage-summary.json ]; then
+            node -e "
+              const fs = require('fs');
+              const coverage = JSON.parse(fs.readFileSync('./coverage/coverage-summary.json', 'utf8')).total;
+              const metrics = ['statements', 'branches', 'functions', 'lines'];
+              console.log('### Coverage Metrics');
+              console.log('| Metric | Covered | Total | Percentage |');
+              console.log('| --- | --- | --- | --- |');
+              metrics.forEach((metric) => {
+                const m = coverage[metric];
+                console.log('| ' + metric + ' | ' + m.covered + ' | ' + m.total + ' | ' + m.pct + '% |');
+              });
+            " >> $GITHUB_STEP_SUMMARY
+          fi
