@@ -35,6 +35,18 @@ export class SalesRepository {
     return repository.findOneBy({ id });
   }
 
+  async findByPaymentCode(paymentCode: string) {
+    const repository = await this.repository();
+    const orderValue = 'DESC' as const;
+
+    return repository.find({
+      where: { paymentOrderCode: paymentCode },
+      order: {
+        createdAt: orderValue,
+      },
+    });
+  }
+
   async update(id: number, updateSaleDto: UpdateSaleDto) {
     const repository = await this.repository();
 

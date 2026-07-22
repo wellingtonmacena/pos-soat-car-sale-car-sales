@@ -95,6 +95,10 @@ export class SalesService {
     return this.salesRepository.findAll();
   }
 
+  findByPaymentCode(paymentCode: string) {
+    return this.salesRepository.findByPaymentCode(paymentCode);
+  }
+
   findOne(id: number) {
     return this.salesRepository.findOne(id);
   }
